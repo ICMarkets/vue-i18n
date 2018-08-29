@@ -268,6 +268,24 @@
             }
           }
 
+          if (options.i18n.prefix) {
+            function subsctactMessagesByPrefix(prefix, messages) {
+              return prefix.split('.')
+                .reduce(function (localeMessages, el) { return localeMessages[el]; }, messages)
+            }
+            var messages = this.$root.$i18n.messages
+            ,   prefixes = Array.isArray(options.i18n.prefix) ? options.i18n.prefix : [options.i18n.prefix];
+            options.i18n.messages = {};
+            prefixes.forEach(function (prefix) { return Object.assign(
+                options.i18n.messages,
+                Object.keys(messages)
+                .reduce(function (result, lang) { return Object.assign(result[lang], subsctactMessagesByPrefix(prefix, result[lang])) && result; },
+                  messages
+                )
+              ); }
+            );
+          }
+
           this._i18n = new VueI18n(options.i18n);
           this._i18nWatcher = this._i18n.watchI18nData();
           this._i18n.subscribeDataChanging(this);
@@ -431,7 +449,7 @@
   function assert (el, vnode) {
     var vm = vnode.context;
     if (!vm) {
-      warn('Vue instance does not exists in VNode context');
+      warn('Vue instance doest not exists in VNode context');
       return false
     }
 
@@ -459,12 +477,12 @@
     var args = ref.args;
     var choice = ref.choice;
     if (!path && !locale && !args) {
-      warn('not support value type');
+      warn('value type not supported');
       return
     }
 
     if (!path) {
-      warn('required `path` in v-t directive');
+      warn('`path` is required in v-t directive');
       return
     }
 

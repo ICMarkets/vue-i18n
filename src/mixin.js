@@ -54,6 +54,26 @@ export default {
           }
         }
 
+        if (options.i18n.prefix) {
+          function subsctactMessagesByPrefix(prefix, messages) {
+            return prefix.split('.')
+              .reduce((localeMessages, el) => localeMessages[el], messages)
+          }
+          let messages = this.$root.$i18n.messages
+          ,   prefixes = Array.isArray(options.i18n.prefix) ? options.i18n.prefix : [options.i18n.prefix]
+          options.i18n.messages = {}
+          prefixes.forEach(prefix =>
+            Object.assign(
+              options.i18n.messages,
+              Object.keys(messages)
+              .reduce((result, lang) =>
+                Object.assign(result[lang], subsctactMessagesByPrefix(prefix, result[lang])) && result,
+                messages
+              )
+            )
+          )
+        }
+
         this._i18n = new VueI18n(options.i18n)
         this._i18nWatcher = this._i18n.watchI18nData()
         this._i18n.subscribeDataChanging(this)
